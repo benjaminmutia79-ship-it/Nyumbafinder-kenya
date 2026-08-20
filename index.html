@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NyumbaFinder Kenya</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f5f7fb;color:#18212f}
+header{background:#0f766e;color:white;padding:18px 6%;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:5}
+.logo{font-size:23px;font-weight:800}.logo span{color:#facc15}
+nav a{color:white;text-decoration:none;margin-left:18px;font-weight:600}
+.hero{padding:60px 6%;background:linear-gradient(135deg,#115e59,#0f766e);color:white}
+.hero h1{font-size:42px;margin:0 0 12px;max-width:700px}.hero p{font-size:18px;max-width:650px}
+.search{background:white;padding:18px;border-radius:16px;display:grid;grid-template-columns:1.3fr 1fr 1fr 1fr auto;gap:10px;max-width:1100px;margin-top:25px;box-shadow:0 10px 30px #0002}
+input,select,button{padding:13px;border:1px solid #ddd;border-radius:9px;font-size:15px}button{background:#0f766e;color:white;border:0;font-weight:700;cursor:pointer}
+.container{padding:35px 6%}.top{display:flex;justify-content:space-between;align-items:center}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px}
+.card{background:white;border-radius:15px;overflow:hidden;box-shadow:0 5px 20px #00000012}.card img{width:100%;height:180px;object-fit:cover}.card-body{padding:16px}.price{font-size:20px;font-weight:800;color:#0f766e}.tag{display:inline-block;background:#ecfdf5;color:#047857;padding:5px 9px;border-radius:20px;font-size:12px;margin:4px 0}
+.card h3{margin:8px 0}.muted{color:#64748b}.actions{display:flex;gap:8px;margin-top:12px}.actions button{flex:1}.outline{background:white;color:#0f766e;border:1px solid #0f766e}
+footer{padding:30px 6%;background:#0b3d3a;color:white;margin-top:40px}
+.empty{padding:30px;text-align:center;color:#64748b;display:none}
+@media(max-width:800px){.search{grid-template-columns:1fr 1fr}.hero h1{font-size:32px}nav{display:none}}
+@media(max-width:520px){.search{grid-template-columns:1fr}.hero{padding:40px 5%}.container{padding:25px 5%}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">Nyumba<span>Finder</span> 🇰🇪</div>
+  <nav><a href="#homes">Nyumba</a><a href="#post">Weka Nyumba</a><a href="#contact">Contact</a></nav>
+</header>
+
+<section class="hero">
+  <h1>Tafuta nyumba yako kwa urahisi.</h1>
+  <p>Search nyumba kwa location, budget na aina ya nyumba. Hakuna kuzunguka sana—anza hapa.</p>
+  <div class="search">
+    <input id="location" placeholder="📍 Location (mf. Kibwezi)">
+    <select id="type"><option value="">Aina ya nyumba</option><option>Bedsitter</option><option>1 Bedroom</option><option>2 Bedroom</option><option>3 Bedroom</option></select>
+    <input id="maxPrice" type="number" placeholder="Max rent (KSh)">
+    <select id="sort"><option value="">Sort</option><option value="low">Bei: chini kwenda juu</option><option value="high">Bei: juu kwenda chini</option></select>
+    <button onclick="searchHomes()">Tafuta</button>
+  </div>
+</section>
+
+<section class="container" id="homes">
+  <div class="top"><h2>Nyumba zilizopo</h2><span id="count" class="muted"></span></div>
+  <div id="grid" class="grid"></div><div id="empty" class="empty">Hakuna nyumba inayolingana na search yako.</div>
+</section>
+
+<section class="container" id="post">
+  <h2>Weka nyumba yako</h2>
+  <p class="muted">Hii demo inaonyesha sehemu ya landlord/agent. Baadaye tunaweza kuiunganisha na database na login.</p>
+  <form class="search" style="margin-top:15px" onsubmit="addHome(event)">
+    <input id="newTitle" required placeholder="Mf. Bedsitter mpya">
+    <input id="newLocation" required placeholder="Location">
+    <input id="newPrice" required type="number" placeholder="Rent KSh">
+    <select id="newType" required><option value="">Aina</option><option>Bedsitter</option><option>1 Bedroom</option><option>2 Bedroom</option></select>
+    <button>Post</button>
+  </form>
+</section>
+
+<footer id="contact">
+  <strong>NyumbaFinder Kenya</strong><br><br>
+  Tafuta. Linganisha. Pata nyumba.<br>
+  <span class="muted">Demo version — ready for the next development stage.</span>
+</footer>
+
+<script>
+let homes=[
+ {title:"Bedsitter safi karibu CBD",location:"Nairobi",price:8500,type:"Bedsitter",img:"https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=800&q=80"},
+ {title:"1 Bedroom modern",location:"Kibwezi",price:10000,type:"1 Bedroom",img:"https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=800&q=80"},
+ {title:"2 Bedroom family house",location:"Mombasa",price:18000,type:"2 Bedroom",img:"https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=800&q=80"},
+ {title:"Bedsitter near stage",location:"Machakos",price:7000,type:"Bedsitter",img:"https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=800&q=80"}
+];
+function render(list=homes){
+ const grid=document.getElementById("grid"), empty=document.getElementById("empty");
+ grid.innerHTML=list.map((h,i)=>`<div class="card"><img src="${h.img}" alt="${h.title}"><div class="card-body"><span class="tag">${h.type}</span><h3>${h.title}</h3><div class="price">KSh ${Number(h.price).toLocaleString()}/month</div><p class="muted">📍 ${h.location}</p><div class="actions"><button onclick="contact('${h.title}','${h.location}')">📞 Contact</button><button class="outline" onclick="saveHome(${i})">♡ Save</button></div></div></div>`).join("");
+ document.getElementById("count").textContent=list.length+" nyumba";
+ empty.style.display=list.length?"none":"block";
+}
+function searchHomes(){
+ let loc=document.getElementById("location").value.toLowerCase(), type=document.getElementById("type").value, max=Number(document.getElementById("maxPrice").value)||Infinity, sort=document.getElementById("sort").value;
+ let list=homes.filter(h=>(!loc||h.location.toLowerCase().includes(loc))&&(!type||h.type===type)&&h.price<=max);
+ if(sort==="low") list.sort((a,b)=>a.price-b.price); if(sort==="high") list.sort((a,b)=>b.price-a.price);
+ render(list);
+ document.getElementById("homes").scrollIntoView({behavior:"smooth"});
+}
+function contact(title,loc){alert("Demo: ungependa kuwasiliana kuhusu "+title+" - "+loc+". Next step tunaweza kuweka WhatsApp/phone ya landlord.");}
+function saveHome(i){alert("Imehifadhiwa kwenye favorites (demo).");}
+function addHome(e){
+ e.preventDefault();
+ homes.unshift({title:newTitle.value,location:newLocation.value,price:Number(newPrice.value),type:newType.value,img:"https://images.unsplash.com/photo-1560185008-b033106af5c3?auto=format&fit=crop&w=800&q=80"});
+ e.target.reset(); render(); alert("Nyumba imeongezwa kwenye demo!");
+}
+render();
+</script>
+</body>
+</html>

@@ -22,7 +22,19 @@ footer{padding:30px 6%;background:#0b3d3a;color:white;margin-top:40px}
 @media(max-width:520px){.search{grid-template-columns:1fr}.hero{padding:40px 5%}.container{padding:25px 5%}}
 </style>
 </head>
-<body>
+<body><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+const SUPABASE_URL = "WEKA_API_URL_YAKO_HAPA";
+const SUPABASE_KEY = "WEKA_PUBLISHABLE_KEY_YAKO_HAPA";
+
+const supabaseClient = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+console.log("NyumbaFinder imeunganishwa na Supabase!");
+</script>
 <header>
   <div class="logo">Nyumba<span>Finder</span> 🇰🇪</div>
   <nav><a href="#homes">Nyumba</a><a href="#post">Weka Nyumba</a><a href="#contact">Contact</a></nav>
